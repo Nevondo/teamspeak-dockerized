@@ -53,4 +53,4 @@ else
 fi
 
 export LD_LIBRARY_PATH=".:$LD_LIBRARY_PATH"
-exec /tini -- ./ts3server inifile=ts3server.ini "$@"
+exec /tini -- ./ts3server inifile=ts3server.ini filetransfer_port="${TEAMSPEAK_PORT_30033}" "$@"
