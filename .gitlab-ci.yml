@@ -7,6 +7,8 @@ services:
 build-master:
   stage: build
   script:
-    - docker build -t devtek314/teamspeak:latest .
+    - docker login git.codeink.de:4567 -u gitlab+deploy-token-1 -p y_7Xej84e8tyq5zipgMw
+    - docker build -t git.codeink.de:4567/codeink/teamspeak-dockerized .
+    - docker push git.codeink.de:4567/codeink/teamspeak-dockerized
   only:
     - master
