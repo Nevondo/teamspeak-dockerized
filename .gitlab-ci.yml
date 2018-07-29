@@ -4,12 +4,12 @@ services:
   - docker:dind
 
 before_script:
-    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN git.codeink.de:4567
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN git.codeink.de:3000
     
 build:
   stage: build
   script:
-    - docker build -t git.codeink.de:4567/codeink/teamspeak-dockerized .
-    - docker push git.codeink.de:4567/codeink/teamspeak-dockerized
+    - docker build -t git.codeink.de:3000/codeink/teamspeak-dockerized .
+    - docker push git.codeink.de:3000/codeink/teamspeak-dockerized
   only:
     - master
