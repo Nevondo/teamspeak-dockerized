@@ -8,7 +8,5 @@ build-master:
   stage: build
   script:
     - docker build -t devtek314/teamspeak:latest .
-    - docker tag devtek314/teamspeak registry.codeink.de:5000/devtek314/teamspeak
-    - docker push registry.codeink.de:5000/devtek314/teamspeak
   only:
     - master
