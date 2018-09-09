@@ -5,7 +5,7 @@ ENV TS_DIRECTORY=/opt/teamspeak
 
 # install the latest teamspeak
 RUN apt-get update && apt-get install -y bzip2 locales w3m wget ethtool && ethtool -K eth0 tx off rx off && rm -rf /var/lib/apt/lists/* &&\
-  TS_SERVER_VER="$(w3m -dump https://www.teamspeak.com/downloads | grep -m 1 'Server 64-bit ' | awk '{print $NF}')" &&\
+  TS_SERVER_VER="$(w3m -dump https://teamspeak.com/en/downloads#server | grep -m 1 'Server 64-bit ' | awk '{print $NF}')" &&\
   wget http://dl.4players.de/ts/releases/${TS_SERVER_VER}/teamspeak3-server_linux_amd64-${TS_SERVER_VER}.tar.bz2 -O /tmp/teamspeak.tar.bz2 &&\
   tar jxf /tmp/teamspeak.tar.bz2 -C /opt &&\
   mv /opt/teamspeak3-server_* ${TS_DIRECTORY} &&\
