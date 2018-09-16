@@ -9,7 +9,7 @@ fi
 
 # have the default inifile as the last parameter
 if [ "$1" = 'ts3server' ]; then
-    set -- "$@" inifile=/var/run/ts3server/ts3server.ini
+    set -- "$@" filetransfer_ip="0.0.0.0" filetransfer_port="${FILETRANSFER_PORT}" inifile=/var/run/ts3server/ts3server.ini
 fi
 
 # usage: file_env VAR [DEFAULT]
@@ -56,8 +56,6 @@ if [ "$1" = 'ts3server' ]; then
 		dbsqlcreatepath=${TS3SERVER_DB_SQLCREATEPATH:-create_sqlite}
 		dbconnections=${TS3SERVER_DB_CONNECTIONS:-10}
 		dbclientkeepdays=${TS3SERVER_DB_CLIENTKEEPDAYS:-30}
-		filetransfer_ip=${FILETRANSFER_IP:-0.0.0.0}
-		filetransfer_port="${FILETRANSFER_PORT: -30033}"
 		logpath=${TS3SERVER_LOG_PATH:-/var/ts3server/logs}
 		logquerycommands=${TS3SERVER_LOG_QUERY_COMMANDS:-0}
 		logappend=${TS3SERVER_LOG_APPEND:-0}
