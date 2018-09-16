@@ -1,56 +1,77 @@
-#!/bin/bash
 
+#! /bin/sh
 set -e
 
-function stop {
-  kill "$(ps -C ts3server -o pid= | awk '{ print $1; }')"
-  exit
-}
-
-trap stop INT
-trap stop TERM
-
-# create directory for teamspeak files
-test -d /data/files || mkdir -p /data/files && chown teamspeak:teamspeak /data/files
-
-# create directory for teamspeak logs
-test -d /data/logs || mkdir -p /data/logs && chown teamspeak:teamspeak /data/logs
-
-# create symlinks for all files and directories in the persistent data directory
-cd "${TS_DIRECTORY}"
-for i in /data/*
-do
-  ln -sf "${i}"
-done
-
-# remove broken symlinks
-find -L "${TS_DIRECTORY}" -type l -delete
-
-# create symlinks for static files
-STATIC_FILES=(
-  query_ip_whitelist.txt
-  query_ip_blacklist.txt
-  ts3server.ini
-  ts3server.sqlitedb
-  ts3server.sqlitedb-shm
-  ts3server.sqlitedb-wal
-  .ts3server_license_accepted
-  licensekey.dat
-)
-for i in "${STATIC_FILES[@]}"
-do
-  echo "Created Link: /data/${i}"
-  ln -sf /data/"${i}"
-done
-
-# check to see if license agreement method has been passed (this doesn't validate the license agreement acceptance; just a basic check)
-if [ -f "${TS_DIRECTORY}/.ts3server_license_accepted" ] || [[ "$*" = *"license_accepted=1"* ]] || [ "${TS3SERVER_LICENSE}" = "accept" ]
-then
-  echo "Found a license agreement method; launching TeamSpeak"
-else
-  echo "Warning: license agreement method hasn't been passed; see the README (https://github.com/mbentley/docker-teamspeak#license-agreement) for how to do so with this Docker image"
-  echo -e "Note: if you're running TeamSpeak < 3.1.0; you can safely ignore this message\\n"
+# don't start ts3server with root permissions
+if [ "$1" = 'ts3server' -a "$(id -u)" = '0' ]; then
+    chown -R ts3server /var/ts3server
+    exec su-exec ts3server "$0" "$@"
 fi
 
-export LD_LIBRARY_PATH=".:$LD_LIBRARY_PATH"
-exec /tini -- ./ts3server filetransfer_ip="0.0.0.0" filetransfer_port="${TEAMSPEAK_PORT_30033}" inifile=ts3server.ini "$@"
+# have the default inifile as the last parameter
+if [ "$1" = 'ts3server' ]; then
+    set -- "$@" inifile=/var/run/ts3server/ts3server.ini
+fi
+
+# usage: file_env VAR [DEFAULT]
+#    ie: file_env 'XYZ_DB_PASSWORD' 'example'
+# (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
+#  "$XYZ_DB_PASSWORD" from a file, especially for Docker's secrets feature)
+file_env() {
+	local var="$1"
+	local fileVar="${var}_FILE"
+	eval local varValue="\$${var}"
+	eval local fileVarValue="\$${var}_FILE"
+	local def="${2:-}"
+	if [ "${varValue:-}" ] && [ "${fileVarValue:-}" ]; then
+			echo >&2 "error: both $var and $fileVar are set (but are exclusive)"
+			exit 1
+	fi
+	local val="$def"
+	if [ "${varValue:-}" ]; then
+			val="${varValue}"
+	elif [ "${fileVarValue:-}" ]; then
+			val="$(cat "${fileVarValue}")"
+	fi
+	export "$var"="$val"
+	unset "$fileVar"
+	unset "$fileVarValue"
+}
+
+if [ "$1" = 'ts3server' ]; then
+	file_env 'TS3SERVER_DB_HOST'
+	file_env 'TS3SERVER_DB_USER'
+	file_env 'TS3SERVER_DB_PASSWORD'
+	file_env 'TS3SERVER_DB_NAME'
+	
+	cat <<- EOF >/var/run/ts3server/ts3server.ini
+		licensepath=${TS3SERVER_LICENSEPATH}
+		query_protocols=${TS3SERVER_QUERY_PROTOCOLS:-raw}
+		query_timeout=${TS3SERVER_QUERY_TIMEOUT:-300}
+		query_ssh_rsa_host_key=${TS3SERVER_QUERY_SSH_RSA_HOST_KEY:-ssh_host_rsa_key}
+		query_ip_whitelist=${TS3SERVER_IP_WHITELIST:-query_ip_whitelist.txt}
+		query_ip_blacklist=${TS3SERVER_IP_BLACKLIST:-query_ip_blacklist.txt}
+		dbplugin=${TS3SERVER_DB_PLUGIN:-ts3db_sqlite3}
+		dbpluginparameter=${TS3SERVER_DB_PLUGINPARAMETER:-/var/run/ts3server/ts3db.ini}
+		dbsqlpath=${TS3SERVER_DB_SQLPATH:-/opt/ts3server/sql/}
+		dbsqlcreatepath=${TS3SERVER_DB_SQLCREATEPATH:-create_sqlite}
+		dbconnections=${TS3SERVER_DB_CONNECTIONS:-10}
+		dbclientkeepdays=${TS3SERVER_DB_CLIENTKEEPDAYS:-30}
+		logpath=${TS3SERVER_LOG_PATH:-/var/ts3server/logs}
+		logquerycommands=${TS3SERVER_LOG_QUERY_COMMANDS:-0}
+		logappend=${TS3SERVER_LOG_APPEND:-0}
+		serverquerydocs_path=${TS3SERVER_serverquerydocs_path:-/opt/ts3server/serverquerydocs/}
+	EOF
+	cat <<- EOF >/var/run/ts3server/ts3db.ini
+		[config]
+		host='${TS3SERVER_DB_HOST}'
+		port='${TS3SERVER_DB_PORT:-3306}'
+		username='${TS3SERVER_DB_USER}'
+		password='${TS3SERVER_DB_PASSWORD}'
+		database='${TS3SERVER_DB_NAME}'
+		socket=
+		wait_until_ready='${TS3SERVER_DB_WAITUNTILREADY:-30}'
+	EOF
+fi
+
+exec "$@"
