@@ -1,6 +1,6 @@
 # teamspeak-dockerized
 
-Team Speak im Docker das ist teamspeak-dockerized
+TeamSpeak im Docker
 
 ## docker-compose.yml
 ```
