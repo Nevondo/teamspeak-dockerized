@@ -8,6 +8,8 @@ before_script:
     
 build:
   stage: build
+  tags:
+    - 3.4.0
   script:
     - docker build -t git.codeink.de:3000/codeink/teamspeak-dockerized .
     - docker push git.codeink.de:3000/codeink/teamspeak-dockerized
