@@ -1,5 +1,4 @@
-
-#! /bin/sh
+#!/bin/sh
 set -e
 
 # don't start ts3server with root permissions
