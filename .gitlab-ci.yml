@@ -11,6 +11,6 @@ build:
   script:
     - docker build -t git.codeink.de:3000/codeink/docker/teamspeak-dockerized:3.4.0 .
     - docker tag git.codeink.de:3000/codeink/docker/teamspeak-dockerized:3.4.0  git.codeink.de:3000/codeink/docker/teamspeak-dockerized:latest
-    - docker push git.codeink.de:3000/codeink/docker/teamspeak-dockerized:3.4.0
+    - docker push git.codeink.de:3000/codeink/docker/teamspeak-dockerized
   only:
     - master
