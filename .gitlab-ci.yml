@@ -5,7 +5,7 @@ services:
 
 before_script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN git.codeink.de:3000
-    - echo "TeamSpeak Version: ${Version}"
+    - echo "${VERSION}"
     
 build:
   stage: build
