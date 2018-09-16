@@ -1,17 +1,19 @@
 image: docker:latest
 
 services:
-  - docker:dind
+    - docker:dind
+  
+variables:
+    - TS_VERSION: "3.4.0"
 
 before_script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN git.codeink.de:3000
-    - echo "${VERSION}"
     
 build:
   stage: build
   script:
-    - docker build -t git.codeink.de:3000/codeink/docker/teamspeak-dockerized:${VERSION} .
-    - docker tag git.codeink.de:3000/codeink/docker/teamspeak-dockerized:${VERSION}   git.codeink.de:3000/codeink/docker/teamspeak-dockerized:latest
+    - docker build -t git.codeink.de:3000/codeink/docker/teamspeak-dockerized:$TS_VERSION .
+    - docker tag git.codeink.de:3000/codeink/docker/teamspeak-dockerized:$TS_VERSION   git.codeink.de:3000/codeink/docker/teamspeak-dockerized:latest
     - docker push git.codeink.de:3000/codeink/docker/teamspeak-dockerized
   only:
     - master
