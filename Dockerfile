@@ -1,39 +1,39 @@
-FROM debian:jessie
-MAINTAINER Aiko Appeldorn <aap@codeink.de>
+FROM alpine:3.7
 
-ENV TS_DIRECTORY=/opt/teamspeak
+RUN apk add --no-cache ca-certificates libstdc++ su-exec
+RUN set -eux; \
+ addgroup -g 9987 ts3server; \
+ adduser -u 9987 -Hh /var/ts3server -G ts3server -s /sbin/nologin -D ts3server; \
+ mkdir -p /var/ts3server /var/run/ts3server; \
+ chown ts3server:ts3server /var/ts3server /var/run/ts3server; \
+ chmod 777 /var/ts3server /var/run/ts3server
 
-# install the latest teamspeak
-RUN apt-get update && apt-get install -y bzip2 locales w3m wget && rm -rf /var/lib/apt/lists/* &&\
-  TS_SERVER_VER="$(w3m -dump https://teamspeak.com/en/downloads#server | grep -m 1 'Server 64-bit ' | awk '{print $NF}')" &&\
-  wget http://dl.4players.de/ts/releases/${TS_SERVER_VER}/teamspeak3-server_linux_amd64-${TS_SERVER_VER}.tar.bz2 -O /tmp/teamspeak.tar.bz2 &&\
-  tar jxf /tmp/teamspeak.tar.bz2 -C /opt &&\
-  mv /opt/teamspeak3-server_* ${TS_DIRECTORY} &&\
-  rm /tmp/teamspeak.tar.bz2 &&\
-  sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen &&\
-  locale-gen &&\
-  apt-get purge -y bzip2 w3m wget &&\
-  apt-get autoremove -y &&\
-  rm -rf /var/lib/apt/lists/*
+ENV PATH "${PATH}:/opt/ts3server"
 
-# set the locale
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
+ARG TEAMSPEAK_CHECKSUM=e356d0013d7e894fd1ed91725f09525e39f077901f84b50ecad0f1e5ab4ad527
+ARG TEAMSPEAK_URL=http://dl.4players.de/ts/releases/3.4.0/teamspeak3-server_linux_alpine-3.4.0.tar.bz2
 
-# create user, group, and set permissions
-RUN groupadd -g 503 teamspeak &&\
-  useradd -u 503 -g 503 -d ${TS_DIRECTORY} teamspeak &&\
-  mkdir /data &&\
-  chown -R teamspeak:teamspeak ${TS_DIRECTORY} /data
+RUN set -eux; \
+ apk add --no-cache --virtual .fetch-deps tar; \
+ wget "${TEAMSPEAK_URL}" -O server.tar.bz2; \
+ echo "${TEAMSPEAK_CHECKSUM} *server.tar.bz2" | sha256sum -c -; \
+ mkdir -p /opt/ts3server; \
+ tar -xf server.tar.bz2 --strip-components=1 -C /opt/ts3server; \
+ rm server.tar.bz2; \
+ apk del .fetch-deps; \
+ mv /opt/ts3server/*.so /opt/ts3server/redist/* /usr/local/lib; \
+ ldconfig /usr/local/lib; \
+ chown -R ts3server:ts3server /opt/ts3server
 
-# add tini (https://github.com/krallin/tini)
-ENV TINI_VERSION v0.13.1
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
-RUN chmod +x /tini
+# setup directory where user data is stored
+VOLUME /var/ts3server/
+WORKDIR /var/ts3server/
 
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod 777 /entrypoint.sh
+#  9987 default voice
+# 10011 server query
+# 30033 file transport
+EXPOSE 9987/udp 10011 30033 
 
-USER teamspeak
-ENTRYPOINT ["/entrypoint.sh"]
+COPY entrypoint.sh /opt/ts3server
+ENTRYPOINT [ "entrypoint.sh" ]
+CMD [ "ts3server" ]
