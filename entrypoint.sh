@@ -73,6 +73,6 @@ if [ "$1" = 'ts3server' ]; then
 	EOF
 fi
 
-ls -la
+
 echo "Starting TS3 server with cmd: $@"
 exec "$@"
