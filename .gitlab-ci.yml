@@ -9,7 +9,7 @@ variables:
 before_script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
     
-after_script
+after_script:
     - docker logout $CI_REGISTRY
     
 build:
