@@ -10,7 +10,7 @@ RUN set -eux; \
 
 ENV PATH "${PATH}:/opt/ts3server"
 
-ARG TEAMSPEAK_CHECKSUM=9bd56e115afea19351a6238a670dc93e365fe88f8a6c28b5b542ef6ae2ca677e
+ARG TEAMSPEAK_CHECKSUM=b21185553e903390908d14542f3210d2077719cb9a1353a4189fbeef5b614ad7
 ARG TEAMSPEAK_URL=http://dl.4players.de/ts/releases/3.5.0/teamspeak3-server_linux_amd64-3.5.0.tar.bz2
 
 RUN set -eux; \
