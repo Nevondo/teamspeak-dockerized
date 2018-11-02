@@ -74,5 +74,5 @@ if [ "$1" = 'ts3server' ]; then
 fi
 
 ls -la
-echo "Starting TeamSpeak 3 Server: $@"
+echo "Starting TS3 server with cmd: $@"
 exec "$@"
