@@ -7,13 +7,16 @@ variables:
     TS_VERSION: "3.5.0"
 
 before_script:
-    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN git.codeink.de:3000
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    
+after_script
+    - docker logout $CI_REGISTRY
     
 build:
   stage: build
   script:
-    - docker build -t git.codeink.de:3000/codeink/docker/teamspeak-dockerized:$TS_VERSION .
-    - docker tag git.codeink.de:3000/codeink/docker/teamspeak-dockerized:$TS_VERSION   git.codeink.de:3000/codeink/docker/teamspeak-dockerized:latest
-    - docker push git.codeink.de:3000/codeink/docker/teamspeak-dockerized
+    - docker build -t $CI_REGISTRY_IMAGE:$TS_VERSION .
+    - docker tag $CI_REGISTRY_IMAGE:$TS_VERSION $CI_REGISTRY_IMAGE:latest
+    - docker push $CI_REGISTRY_IMAGE
   only:
     - master
