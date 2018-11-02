@@ -72,5 +72,7 @@ if [ "$1" = 'ts3server' ]; then
 		wait_until_ready='${TS3SERVER_DB_WAITUNTILREADY:-30}'
 	EOF
 fi
-echo "$@"
+
+ls -la
+echo "Starting TeamSpeak 3 Server: $@"
 exec "$@"
