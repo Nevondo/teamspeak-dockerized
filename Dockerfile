@@ -24,7 +24,8 @@ RUN set -eux; \
  mv /opt/ts3server/*.so /opt/ts3server/redist/* /usr/local/lib; \
  ldconfig /usr/local/lib; \
  chown -R ts3server:ts3server /opt/ts3server; \
- ls -la /opt/ts3server/
+ ls -la /opt/ts3server/; \
+ ls -la /bin
 
 # setup directory where user data is stored
 VOLUME /var/ts3server/
