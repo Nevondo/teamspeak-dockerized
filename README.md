@@ -7,7 +7,7 @@ TeamSpeak im Docker
 version: '3.1'
 services:
   teamspeak:
-    image: registry.codeink.de/codeink/teamspeak-dockerized:3.5.0
+    image: registry.codeink.de/codeink/teamspeak-dockerized:3.5.1
     restart: always
     ports:
       - 9987:9987/udp
