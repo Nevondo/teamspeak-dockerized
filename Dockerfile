@@ -1,4 +1,4 @@
-FROM alpine:3.8
+FROM alpine:3.7
 
 RUN apk add --no-cache ca-certificates libstdc++ su-exec
 RUN set -eux; \
@@ -25,7 +25,7 @@ RUN set -eux; \
  ldconfig /usr/local/lib; \
  chown -R ts3server:ts3server /opt/ts3server; \
  ls -la /opt/ts3server/
- 
+
 # setup directory where user data is stored
 VOLUME /var/ts3server/
 WORKDIR /var/ts3server/
