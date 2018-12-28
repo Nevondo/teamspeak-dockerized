@@ -30,3 +30,33 @@ services:
       MYSQL_DATABASE: teamspeak
 
 ```
+## docker-compose.yml
+```
+version: '2.3'
+services:
+
+##########################################################################
+#
+#    TeamSpeaks 
+#
+
+    teamspeak3-codeink:
+      image: registry.codeink.de/codeink/docker/teamspeak-dockerized:3.5.1
+      environment:
+        - TS3SERVER_LICENSE=accept
+        - FILETRANSFER_PORT=30033
+      volumes:
+        - teamspeak3-codeink:/var/ts3server/
+      restart: unless-stopped
+      ports:
+        - 9987:9987/udp
+        - 30033:30033
+        - 10011:10011
+          
+#
+#
+##########################################################################
+
+volumes:
+  teamspeak3-codeink:
+```
