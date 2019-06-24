@@ -4,7 +4,7 @@ services:
     - docker:dind
   
 variables:
-    TS_VERSION: "3.8.0"
+    TS_VERSION: "3.9.0"
 
 before_script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
