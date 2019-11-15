@@ -1,7 +1,4 @@
 image: docker:latest
-
-services:
-    - docker:dind
   
 variables:
     TS_VERSION: "3.10.0"
