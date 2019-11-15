@@ -4,7 +4,7 @@ variables:
     TS_VERSION: "3.10.0"
 
 before_script:
-    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - echo -n $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
     
 after_script:
     - docker logout $CI_REGISTRY
