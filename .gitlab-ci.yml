@@ -13,6 +13,6 @@ build:
   stage: build
   script:
     - docker build -t $CI_REGISTRY_IMAGE:$TS_VERSION .
-    - docker push $CI_REGISTRY_IMAGE
+    - docker push -a $CI_REGISTRY_IMAGE
   only:
     - master
