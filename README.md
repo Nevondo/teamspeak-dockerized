@@ -7,7 +7,7 @@ TeamSpeak im Docker
 version: '3.1'
 services:
   teamspeak:
-    image: docker.nevondo.com/nevondo/teamspeak-dockerized:latest
+    image: docker.nevondo.com/nevondo/teamspeak-dockerized:3.13.3
     restart: always
     ports:
       - 9987:9987/udp
@@ -42,7 +42,7 @@ services:
 #
 
     teamspeak3-nevondo:
-      image: docker.nevondo.com/nevondo/docker/teamspeak-dockerized:latest
+      image: docker.nevondo.com/nevondo/docker/teamspeak-dockerized:3.13.3
       environment:
         - TS3SERVER_LICENSE=accept
         - FILETRANSFER_PORT=30033
