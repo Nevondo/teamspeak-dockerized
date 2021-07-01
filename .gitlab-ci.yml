@@ -12,7 +12,7 @@ after_script:
 build:
   stage: build
   script:
-    - docker build -t $CI_REGISTRY_IMAGE:$TS_VERSION .
+    - docker build -t $CI_REGISTRY_IMAGE:$TS_VERSION -t $CI_REGISTRY_IMAGE:latest .
     - docker push -a $CI_REGISTRY_IMAGE
   only:
     - master
