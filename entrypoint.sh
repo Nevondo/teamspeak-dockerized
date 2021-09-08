@@ -9,7 +9,7 @@ fi
 
 # have the default inifile as the last parameter
 if [ "$1" = 'ts3server' ]; then
-    set -- "$@" filetransfer_ip="0.0.0.0" filetransfer_port="${FILETRANSFER_PORT}" inifile=/var/run/ts3server/ts3server.ini
+    set -- "$@" inifile=/var/run/ts3server/ts3server.ini
 
 fi
 
