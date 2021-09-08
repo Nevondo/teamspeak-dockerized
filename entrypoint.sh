@@ -83,7 +83,6 @@ EOF
         username='${TS3SERVER_DB_USER}'
         password='${TS3SERVER_DB_PASSWORD}'
         database='${TS3SERVER_DB_NAME}'
-        filetransfer_port='${TS3SERVER_FILETRANSFER_PORT:-30033}'
         socket=
         wait_until_ready='${TS3SERVER_DB_WAITUNTILREADY:-30}'
 EOF
